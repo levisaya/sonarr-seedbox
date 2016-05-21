@@ -1,34 +1,32 @@
 jackett:
-	image: linuxserver/jackett
-	name: jackett
-	ports:
-		- "9117:9117"
-	volumes:
-		- /etc/localtime:/etc/localtime:ro
-		- /share/CACHEDEV1_DATA/jackett/config/:/config
-		- /share/CACHEDEV1_DATA/jackett/downloads/:/downloads
-	expose:
-		- 9117
-
+    image: linuxserver/jackett
+    container_name: jackett
+    ports:
+        - "${JACKETT_PORT}:9117"
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - ${JACKETT_DIR}/config/:/config
+        - ${JACKETT_DIR}/downloads/:/downloads
+    expose:
+        - 9117
 sonarr:
-	image: linuxserver/sonarr
-	name: sonarr
-	ports:
-		- "8989:8888"
-	links:
-		- jackett
-	volumes:
-		- /dev/rts:/dev/rtc:ro
-		- /share/CACHEDEV1_DATA/sonarr/config:/config
-		- /mnt/usb3tb/TV:/tv
-		- /share/CACHEDEV1_DATA/sonarr/downloads:/downloads
-		- /share/CACHEDEV1_DATA/btsync/watch:/watch
-
+    image: linuxserver/sonarr
+    container_name: sonarr
+    ports:
+        - "${SONARR_PORT}:8989"
+    links:
+        - jackett
+    volumes:
+        - /dev/rts:/dev/rtc:ro
+        - ${SONARR_DIR}/config:/config
+        - ${TV_DIR}:/tv
+        - ${BTSYNC_DIR}/watch:/downloads
 btsync:
-	image: bittorrent/sync
-	name: btsync
-	ports:
-		- "55555"
-		- "9888:8888"
-	volumes:
-		- /share/CACHEDEV1_DATA/btsync:/mnt/mounted_folders
+    image: bittorrent/sync
+    container_name: btsync
+    ports:
+        - "55555"
+        - "${BTSYNC_PORT}:8888"
+    volumes:
+        - ${BTSYNC_DIR}:/mnt/mounted_folders
+        - ${SONARR_DIR}/downloads:/downloads

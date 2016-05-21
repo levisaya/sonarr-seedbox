@@ -17,7 +17,7 @@ def main(jackett_port,
     env['BTSYNC_DIR'] = btsync_dir
     env['TV_DIR'] = tv_dir
     
-    subprocess.Popen(['docker-compose', 'up', '-d'], env=env)
+    subprocess.Popen(['docker-compose', 'stop'], env=env)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Jackett, Sonarr and BTSync')
