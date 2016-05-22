@@ -1,7 +1,9 @@
 import argparse
 import subprocess, os
+import json
 
-def main(jackett_port,
+def main(command,
+         jackett_port,
          sonarr_port,
          btsync_port,
          jackett_dir,
@@ -17,24 +19,40 @@ def main(jackett_port,
     env['BTSYNC_DIR'] = btsync_dir
     env['TV_DIR'] = tv_dir
 
-    subprocess.Popen(['docker-compose', 'up', '-d'], env=env)
+    if command.lower() in ['start']:
+        subprocess.Popen(['docker-compose', 'up', '-d'], env=env)
+    elif command.lower() in ['stop']:
+        subprocess.Popen(['docker-compose', 'stop'], env=env)
+    else:
+        print "Command unknown."
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run Jackett, Sonarr and BTSync')
-    parser.add_argument('--jackett-port', type=int, default=9117, help='External facing port for Jackett.')
-    parser.add_argument('--sonarr-port', type=int, default=8989, help='External facing port for Sonarr.')
-    parser.add_argument('--btsync-port', type=int, default=9888, help='External facing port for BTSync.')
+    # Load settings from config.json
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
 
-    parser.add_argument('--jackett-dir', type=str, help='Base directory for Jackett files.', required=True)
-    parser.add_argument('--sonarr-dir', type=str, help='Base directory for Sonarr files.', required=True)
-    parser.add_argument('--btsync-dir', type=str, help='Base directory for BTSync files.', required=True)
-    parser.add_argument('--tv-dir', type=str, help='Base directory for TV shows.', required=True)
+    parser = argparse.ArgumentParser(description='Run Jackett, Sonarr and BTSync')
+
+    # The point of this file
+    parser.add_argument('command', type=str, help='The command to run. start or stop', default='start')
+
+    # Ports
+    parser.add_argument('--jackett-port', type=int, help='External facing port for Jackett.', default=config['jackett_port'])
+    parser.add_argument('--sonarr-port', type=int, help='External facing port for Sonarr.', default=config['sonarr_port'])
+    parser.add_argument('--btsync-port', type=int, help='External facing port for BTSync.', default=config['btsync_port'])
+
+    # Directories
+    parser.add_argument('--jackett-dir', type=str, help='Base directory for Jackett files.', default=config['jackett_dir'])
+    parser.add_argument('--sonarr-dir', type=str, help='Base directory for Sonarr files.', default=config['sonarr_dir'])
+    parser.add_argument('--btsync-dir', type=str, help='Base directory for BTSync files.', default=config['btsync_dir'])
+    parser.add_argument('--tv-dir', type=str, help='Base directory for TV shows.', default=config['tv_dir'])
 
     args = parser.parse_args()
 
     print(args)
 
-    main(str(args.jackett_port),
+    main(args.command,
+         str(args.jackett_port),
          str(args.sonarr_port),
          str(args.btsync_port),
          args.jackett_dir,
