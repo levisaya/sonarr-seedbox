@@ -1,0 +1,9 @@
+{
+  "jackett_port": "32771",
+  "sonarr_port":  "32772",
+  "btsync_port":  "32773",
+  "jackett_dir":  "/share/CACHEDEV1_DATA/jackett",
+  "sonarr_dir":   "/share/CACHEDEV1_DATA/sonarr",
+  "btsync_dir":   "/share/CACHEDEV1_DATA/btsync",
+  "tv_dir":       "/share/Shows"
+}
