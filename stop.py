@@ -21,13 +21,13 @@ def main(jackett_port,
 
 if __name__ == "__main__":
     json_config = {
-      "jackett_port": "9000",
-      "sonarr_port":  "9001",
-      "btsync_port":  "9002",
-      "jackett_dir":  "/share/CACHEDEV1_DATA/jackett",
-      "sonarr_dir":   "/share/CACHEDEV1_DATA/sonarr",
-      "btsync_dir":   "/share/CACHEDEV1_DATA/btsync",
-      "tv_dir":       "/mnt/usb3tb/"
+      "jackett_port": None,
+      "sonarr_port":  None,
+      "btsync_port":  None,
+      "jackett_dir":  None,
+      "sonarr_dir":   None,
+      "btsync_dir":   None,
+      "tv_dir":       None
     }
 
     try:
@@ -37,18 +37,21 @@ if __name__ == "__main__":
         pass
 
     parser = argparse.ArgumentParser(description='Run Jackett, Sonarr and BTSync')
-    parser.add_argument('--jackett-port', type=int, default=json_config['jackett_port'], help='External facing port for Jackett.')
-    parser.add_argument('--sonarr-port', type=int, default=json_config['sonarr_port'], help='External facing port for Sonarr.')
-    parser.add_argument('--btsync-port', type=int, default=json_config['btsync_port'], help='External facing port for BTSync.')
+    parser.add_argument('--jackett-port', type=int, default=json_config.get('jackett_port', None), help='External facing port for Jackett.')
+    parser.add_argument('--sonarr-port', type=int, default=json_config.get('sonarr_port', None), help='External facing port for Sonarr.')
+    parser.add_argument('--btsync-port', type=int, default=json_config.get('btsync_port', None), help='External facing port for BTSync.')
 
-    parser.add_argument('--jackett-dir', type=str, default=json_config['jackett_dir'], help='Base directory for Jackett files.')
-    parser.add_argument('--sonarr-dir', type=str, default=json_config['sonarr_dir'],help='Base directory for Sonarr files.')
-    parser.add_argument('--btsync-dir', type=str, default=json_config['btsync_dir'], help='Base directory for BTSync files.')
-    parser.add_argument('--tv-dir', type=str, default=json_config['tv_dir'], help='Base directory for TV shows.')
+    parser.add_argument('--jackett-dir', type=str, default=json_config.get('jackett_dir', None), help='Base directory for Jackett files.')
+    parser.add_argument('--sonarr-dir', type=str, default=json_config.get('sonarr_dir', None), help='Base directory for Sonarr files.')
+    parser.add_argument('--btsync-dir', type=str, default=json_config.get('btsync_dir', None), help='Base directory for BTSync files.')
+    parser.add_argument('--tv-dir', type=str, default=json_config.get('tv_dir', None), help='Base directory for TV shows.')
 
-    args = parser.parse_args()
+    args = vals(parser.parse_args())
 
-    print(args)
+    if None in args.values():
+        for argname, argval in args.items():
+            print("{} not specified in the config json or on the command line, exiting!")
+        exit(1)
 
     main(str(args.jackett_port),
          str(args.sonarr_port),
