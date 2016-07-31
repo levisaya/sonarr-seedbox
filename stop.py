@@ -1,5 +1,6 @@
 import argparse
 import subprocess, os
+import json
 
 def main(jackett_port,
          sonarr_port,
@@ -33,9 +34,10 @@ if __name__ == "__main__":
     try:
         with open('config.json', 'r') as json_file:
             json_config = json.load(json_file)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
+    print(json_config)
     parser = argparse.ArgumentParser(description='Run Jackett, Sonarr and BTSync')
     parser.add_argument('--jackett-port', type=int, default=json_config.get('jackett_port', None), help='External facing port for Jackett.')
     parser.add_argument('--sonarr-port', type=int, default=json_config.get('sonarr_port', None), help='External facing port for Sonarr.')
@@ -46,11 +48,11 @@ if __name__ == "__main__":
     parser.add_argument('--btsync-dir', type=str, default=json_config.get('btsync_dir', None), help='Base directory for BTSync files.')
     parser.add_argument('--tv-dir', type=str, default=json_config.get('tv_dir', None), help='Base directory for TV shows.')
 
-    args = vals(parser.parse_args())
+    args = parser.parse_args()
 
-    if None in args.values():
-        for argname, argval in args.items():
-            print("{} not specified in the config json or on the command line, exiting!")
+    if None in vars(args).values():
+        for argname, argval in vars(args).items():
+            print("{} not specified in the config json or on the command line, exiting!".format(argname))
         exit(1)
 
     main(str(args.jackett_port),

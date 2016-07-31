@@ -28,5 +28,5 @@ btsync:
         - "55555"
         - "${BTSYNC_PORT}:8888"
     volumes:
-        - ${BTSYNC_DIR}:/mnt/mounted_folders
+        - ${BTSYNC_DIR}/watch:/mnt/mounted_folders
         - ${SONARR_DIR}/downloads:/downloads
